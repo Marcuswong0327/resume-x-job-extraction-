@@ -32,7 +32,7 @@ class AIParser:
         """Test the OpenRouter API connection with DeepSeek V3"""
         try:
             test_payload = {
-                "model": "deepseek/deepseek-chat-v3-0324",
+                "model": "anthropic/claude-sonnet-4",
                 "messages": [{"role": "user", "content": "Hello"}],
                 "max_tokens": 10,
                 "temperature": 0.1
@@ -170,7 +170,7 @@ Rules:
         """
         try:
             payload = {
-                "model": "deepseek/deepseek-chat-v3-0324",
+                "model": "anthropic/claude-sonnet-4",
                 "messages": [
                     {
                         "role": "user",
