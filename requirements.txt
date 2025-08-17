@@ -1,0 +1,8 @@
+streamlit
+PyPDF2
+PyMuPDF
+python-docx
+pandas
+openpyxl
+python-dateutil
+numpy
