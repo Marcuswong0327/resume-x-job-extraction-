@@ -177,7 +177,7 @@ Rules:
                         "content": prompt
                     }
                 ],
-                "max_tokens": 3000,
+                "max_tokens": 200,
                 "temperature": 0.1,
                 "stream": False
             }
