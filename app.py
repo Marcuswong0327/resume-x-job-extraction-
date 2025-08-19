@@ -37,7 +37,7 @@ def main():
         st.header("📤 Upload Resume Files")
         uploaded_files = st.file_uploader(
             "Upload up to 100 files",
-            type=['pdf', 'docx', 'doc'],
+            type=['pdf', 'docx'],
             accept_multiple_files=True,
         )
         
@@ -60,7 +60,7 @@ def main():
                     process_resumes(uploaded_files)
     
     with col2:
-        st.header("📊 Processing Status")
+        st.header("Processing Status")
         
         if st.session_state.processing_in_progress:
             st.info("Processing")
@@ -78,7 +78,7 @@ def main():
     
     # Display processed candidates
     if st.session_state.processed_candidates:
-        st.header("👥 Processed Candidates")
+        st.header("Processed Candidates")
         
         # Create DataFrame for display
         display_data = []
@@ -120,13 +120,13 @@ def process_resumes(uploaded_files):
     
     try:
         # Initialize services
-        with st.spinner("Initializing services..."):
+        with st.spinner("Initializing"):
             try:
                 pdf_processor = PDFProcessor()
                 word_processor = WordProcessor()
                 ai_parser = AIParser(st.secrets["DEEPSEEK_API_KEY"])
             except Exception as e:
-                st.error(f"❌ Error initializing services: {str(e)}")
+                st.error(f"Error initializing services: {str(e)}")
                 st.session_state.processing_in_progress = False
                 return
         
@@ -152,15 +152,15 @@ def process_resumes(uploaded_files):
                 if file_extension == 'pdf':
                     with st.spinner(f"Extracting {uploaded_file.name}..."):
                         extracted_text = pdf_processor.process_pdf_file(uploaded_file)
-                elif file_extension in ['doc', 'docx']:
+                elif file_extension in ['docx']:
                     with st.spinner(f"Extracting {uploaded_file.name}..."):
                         extracted_text = word_processor.process_word_file(uploaded_file)
                 else:
-                    st.warning(f"⚠️ Unsupported file type: {file_extension}")
+                    st.warning(f"Unsupported file type: {file_extension}")
                     continue
                 
                 if not extracted_text.strip():
-                    st.warning(f"⚠️ No text could be extracted from {uploaded_file.name}")
+                    st.warning(f"No text TO extract from {uploaded_file.name}")
                     continue
                 
                 # Parse resume using AI
@@ -189,13 +189,13 @@ def process_resumes(uploaded_files):
         if successful_processes > 0:
             st.success(f"Successfully processed {successful_processes}/{total_files} resume files.")
         else:
-            st.warning("⚠️ No files were successfully processed. Please check your files and try again.")
+            st.warning(" No files were successfully processed.")
             
     except Exception as e:
-        st.error(f"❌ An unexpected error occurred: {str(e)}")
+        st.error(f"An unexpected error occurred: {str(e)}")
         st.session_state.processing_in_progress = False
         # Show detailed error for debugging
-        with st.expander("🔍 Error Details"):
+        with st.expander("Error Details"):
             st.code(traceback.format_exc())
 
 
@@ -228,13 +228,14 @@ def generate_and_download_excel():
             st.components.v1.html(js, height=0)
 
     except Exception as e:
-        st.error(f"❌ Error generating Excel report: {str(e)}")
-        with st.expander("🔍 Error Details"):
+        st.error(f"Error generating Excel report: {str(e)}")
+        with st.expander("Error Details"):
             st.code(traceback.format_exc())
 
 
 if __name__ == "__main__":
     main()
+
 
 
 
