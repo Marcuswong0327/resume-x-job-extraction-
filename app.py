@@ -52,9 +52,9 @@ def main():
             # Process files button
             process_disabled = not credentials_status['deepseek_status'] or st.session_state.processing_in_progress
             
-            if st.button("🚀 Process Resumes", type="primary", use_container_width=True, disabled=process_disabled):
+            if st.button("Process Resumes", type="primary", use_container_width=True, disabled=process_disabled):
                 if not credentials_status['deepseek_status']:
-                    st.error("❌ Please configure OpenRouter API credentials before processing.")
+                    st.error("Please configure OpenRouter API credentials before processing.")
                 else:
                     process_resumes(uploaded_files)
     
@@ -234,6 +234,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
