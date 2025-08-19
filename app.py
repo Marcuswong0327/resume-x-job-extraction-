@@ -34,9 +34,8 @@ def main():
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.header("📤 Upload Resume Files")
         uploaded_files = st.file_uploader(
-            "Upload up to 100 files",
+            "Upload resume files",
             type=['pdf', 'docx'],
             accept_multiple_files=True,
         )
@@ -235,6 +234,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
