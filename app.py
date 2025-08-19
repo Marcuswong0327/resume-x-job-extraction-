@@ -16,7 +16,7 @@ def main():
     )
     
     st.title("📄 Resume Parser & Analyzer")
-    st.markdown("Road to Million Biller!!!")
+    st.title("Road to Million Biller!!!")
     
     # Initialize session state
     if 'processed_candidates' not in st.session_state:
@@ -235,6 +235,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
