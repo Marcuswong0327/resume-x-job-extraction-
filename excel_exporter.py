@@ -60,7 +60,7 @@ class ExcelExporter:
                 # Create a style for headers
                 header_style = NamedStyle(name="header_style")
                 header_style.font = Font(bold=True)
-                header_style.fill = PatternFill(start_color="CCCCCC", end_color="CCCCCC", fill_type="solid")
+                header_style.fill = PatternFill(start_color="FFFFFF", end_color="FFFFFF", fill_type="solid")
 
                 # Register the style to the workbook
                 if "header_style" not in workbook.named_styles:
