@@ -4,15 +4,10 @@ import streamlit as st
 import time
 
 class AIParser:
-    """Handles DeepSeek V3 API integration via OpenRouter for intelligent resume parsing"""
+    """Handle Claude Sonnet 4 API integration via OpenRouter for intelligent resume parsing"""
     
     def __init__(self, api_key):
-        """
-        Initialize AI parser with OpenRouter API key for DeepSeek V3
-        
-        Args:
-            api_key: OpenRouter API key
-        """
+
         if not api_key:
             raise ValueError("OpenRouter API key is required")
             
@@ -21,15 +16,15 @@ class AIParser:
         self.headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://replit.com",  # Required by OpenRouter
-            "X-Title": "Resume Parser"  # Optional but recommended
+            "HTTP-Referer": "https://replit.com", 
+            "X-Title": "Resume Parser"
         }
         
         # Test the API connection
         self._test_connection()
     
     def _test_connection(self):
-        """Test the OpenRouter API connection with DeepSeek V3"""
+
         try:
             test_payload = {
                 "model": "anthropic/claude-sonnet-4",
@@ -52,23 +47,15 @@ class AIParser:
             raise Exception(f"OpenRouter API connection test failed: {str(e)}")
     
     def parse_resume(self, resume_text):
-        """
-        Parse resume text using DeepSeek V3 API
-        
-        Args:
-            resume_text: Raw text extracted from resume
-            
-        Returns:
-            Structured resume data as dictionary
-        """
+
         try:
             if not resume_text or not resume_text.strip():
                 return self._create_empty_structure()
             
-            # Create prompt for resume parsing
+            # Create prompt 
             prompt = self._create_parsing_prompt(resume_text)
             
-            # Make API call to DeepSeek with retries
+            # Make API call 
             response = self._make_api_call_with_retry(prompt)
             
             if response:
@@ -81,15 +68,7 @@ class AIParser:
             return self._create_empty_structure()
     
     def _create_parsing_prompt(self, resume_text):
-        """
-        Create a structured prompt for resume parsing
-        
-        Args:
-            resume_text: Raw resume text
-            
-        Returns:
-            Formatted prompt string
-        """
+ 
         # Truncate text if too long to avoid token limits
         max_chars = 15000
         if len(resume_text) > max_chars:
@@ -104,14 +83,14 @@ Resume Text:
 Please extract and return ONLY a valid JSON object with the following structure:
 sometimes the information maybe on second page. but majority is first page. 
 {{
-    "first_name": "candidate first name, normally on top few lines of first pages",
-    "last_name": "candidate last name, normallly on top few lines of first page",
+    "first name": "candidate first name, normally on top few lines of first pages",
+    "last name": "candidate last name, normallly on top few lines of first page",
     "mobile": "phone/mobile number, near around name area",
     "email": "email address, near around mobile phone number area",
-    "current_job_title": "current/most recent job title based on latest date, normally the most recent job title will be listed on first",
-    "current_company": "current/most recent company name",
-    "previous_job_title": "previous job title (before current one), based on the date, normally second job title is before current one",
-    "previous_company": "previous company name (before current one)"
+    "current job_title": "current/most recent job title based on latest date, normally the most recent job title will be listed on first",
+    "current company": "current/most recent company name",
+    "previous job title": "previous job title (before current one), based on the date, normally second job title is before current one",
+    "previous company": "previous company name (before current one)"
 }}
 
 Instructions for determining current vs previous positions:
@@ -125,23 +104,14 @@ Rules:
 1. Return ONLY valid JSON, no additional text or explanations
 2. If information is not found, use empty string ""
 3. Be very careful with dates to correctly identify current vs previous positions
-4. Extract full names and split into first_name and last_name
+4. Extract full names and split into first name and last name
 5. Look for mobile/phone numbers in various formats
 6. Be thorough and accurate in extraction
 """
         return prompt
     
     def _make_api_call_with_retry(self, prompt, max_retries=3):
-        """
-        Make API call to DeepSeek V3 with retry logic
-        
-        Args:
-            prompt: Formatted prompt string
-            max_retries: Maximum number of retry attempts
-            
-        Returns:
-            API response content or None
-        """
+
         for attempt in range(max_retries):
             try:
                 response = self._make_api_call(prompt)
@@ -159,15 +129,7 @@ Rules:
         return None
     
     def _make_api_call(self, prompt):
-        """
-        Make API call to DeepSeek V3
-        
-        Args:
-            prompt: Formatted prompt string
-            
-        Returns:
-            API response content or None
-        """
+
         try:
             payload = {
                 "model": "anthropic/claude-sonnet-4",
@@ -186,7 +148,7 @@ Rules:
                 self.base_url,
                 headers=self.headers,
                 json=payload,
-                timeout=60  # Increased timeout
+                timeout=60  
             )
             
             if response.status_code == 200:
@@ -194,7 +156,7 @@ Rules:
                 content = result.get("choices", [{}])[0].get("message", {}).get("content", "")
                 return content
             else:
-                error_msg = f"DeepSeek API error: {response.status_code}"
+                error_msg = f"Claude API error: {response.status_code}"
                 try:
                     error_detail = response.json()
                     error_msg += f" - {error_detail}"
@@ -203,22 +165,14 @@ Rules:
                 raise Exception(error_msg)
                 
         except requests.exceptions.Timeout:
-            raise Exception("DeepSeek API request timed out")
+            raise Exception("Claude API request timed out")
         except requests.exceptions.RequestException as e:
-            raise Exception(f"Network error calling DeepSeek API: {str(e)}")
+            raise Exception(f"Network error calling Claude API: {str(e)}")
         except Exception as e:
-            raise Exception(f"Error calling DeepSeek API: {str(e)}")
+            raise Exception(f"Error calling Claude API: {str(e)}")
     
     def _parse_api_response(self, response_text):
-        """
-        Parse API response and extract JSON data
-        
-        Args:
-            response_text: Raw response text from API
-            
-        Returns:
-            Parsed JSON data as dictionary
-        """
+
         try:
             # Try to find JSON in the response
             response_text = response_text.strip()
@@ -258,43 +212,30 @@ Rules:
             return self._create_empty_structure()
     
     def _validate_parsed_data(self, data):
-        """
-        Validate and clean parsed data structure
         
-        Args:
-            data: Parsed data dictionary
-            
-        Returns:
-            Validated and cleaned data dictionary
-        """
         # Ensure all required fields exist
         validated_data = {
-            "first_name": str(data.get("first_name", "")).strip(),
-            "last_name": str(data.get("last_name", "")).strip(),
+            "first name": str(data.get("first name", "")).strip(),
+            "last name": str(data.get("last name", "")).strip(),
             "mobile": str(data.get("mobile", "")).strip(),
             "email": str(data.get("email", "")).strip(),
-            "current_job_title": str(data.get("current_job_title", "")).strip(),
-            "current_company": str(data.get("current_company", "")).strip(),
-            "previous_job_title": str(data.get("previous_job_title", "")).strip(),
-            "previous_company": str(data.get("previous_company", "")).strip()
+            "current job title": str(data.get("current job title", "")).strip(),
+            "current company": str(data.get("current company", "")).strip(),
+            "previous job title": str(data.get("previous job title", "")).strip(),
+            "previous company": str(data.get("previous company", "")).strip()
         }
         
         return validated_data
     
     def _create_empty_structure(self):
-        """
-        Create empty data structure for failed parsing
         
-        Returns:
-            Empty data structure dictionary
-        """
         return {
-            "first_name": "",
-            "last_name": "",
+            "first name": "",
+            "last name": "",
             "mobile": "",
             "email": "",
-            "current_job_title": "",
-            "current_company": "",
-            "previous_job_title": "",
-            "previous_company": ""
+            "current job title": "",
+            "current company": "",
+            "previous job title": "",
+            "previous company": ""
         }
