@@ -87,7 +87,7 @@ sometimes the information maybe on second page. but majority is first page.
     "last name": "candidate last name, normallly on top few lines of first page",
     "mobile": "phone/mobile number, near around name area",
     "email": "email address, near around mobile phone number area",
-    "current job_title": "current/most recent job title based on latest date, normally the most recent job title will be listed on first",
+    "current job title": "current/most recent job title based on latest date, normally the most recent job title will be listed on first",
     "current company": "current/most recent company name",
     "previous job title": "previous job title (before current one), based on the date, normally second job title is before current one",
     "previous company": "previous company name (before current one)"
