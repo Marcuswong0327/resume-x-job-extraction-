@@ -30,14 +30,14 @@ class ExcelExporter:
             
             for candidate in candidates_data:
                 row = {
-                    'First Name': candidate.get('first_name', ''),
-                    'Last Name': candidate.get('last_name', ''),
+                    'First Name': candidate.get('first name', ''),
+                    'Last Name': candidate.get('last name', ''),
                     'Mobile': candidate.get('mobile', ''),
                     'Email': candidate.get('email', ''),
-                    'Current Job Title': candidate.get('current_job_title', ''),
-                    'Current Company': candidate.get('current_company', ''),
-                    'Previous Job Title': candidate.get('previous_job_title', ''),
-                    'Previous Company': candidate.get('previous_company', ''),
+                    'Current Job Title': candidate.get('current job title', ''),
+                    'Current Company': candidate.get('current company', ''),
+                    'Previous Job Title': candidate.get('previous job title', ''),
+                    'Previous Company': candidate.get('previous company', ''),
                     'Source File': candidate.get('filename', '')
                 }
                 excel_data.append(row)
