@@ -17,7 +17,7 @@ def main():
     
     st.title("📄 Resume Parser & Analyzer")
     st.title("Road to Million Biller!!!")
-    st.image("linktal logo transparent.png", width = 200)
+
     
     # Initialize session state
     if 'processed_candidates' not in st.session_state:
@@ -235,6 +235,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
