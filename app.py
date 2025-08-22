@@ -60,7 +60,7 @@ def main():
                     process_resumes(uploaded_files)
     
     with col2:
-        st.image("linktal logo transparent.png", use_column_width=True, width = 100)
+        st.image("linktal logo transparent.png", use_container_width=True, width = 100)
         st.header("Processing Status")
         
         if st.session_state.processing_in_progress:
@@ -236,6 +236,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
