@@ -10,13 +10,13 @@ import base64
 
 def main():
     st.set_page_config(
-        page_title="Resume Parser & Analyzer",
+        page_title="Resume Parser",
         page_icon="📄",
         layout="wide"
     )
     
     st.title("📄 Resume Parser & Analyzer")
-    st.title("Road to Million Biller!!!")
+    st.title("💰Road to Million Biller!!!")
 
     
     # Initialize session state
@@ -36,7 +36,6 @@ def main():
     
     with col1:
         uploaded_files = st.file_uploader(
-            "Upload resume files",
             type=['pdf', 'docx'],
             accept_multiple_files=True,
         )
@@ -236,6 +235,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
