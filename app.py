@@ -36,6 +36,7 @@ def main():
     
     with col1:
         uploaded_files = st.file_uploader(
+            "Upload as many you like!",
             type=['pdf', 'docx'],
             accept_multiple_files=True,
         )
@@ -235,6 +236,7 @@ def generate_and_download_excel():
 
 if __name__ == "__main__":
     main()
+
 
 
 
