@@ -8,17 +8,10 @@ from ai_parser import AIParser
 from excel_exporter import ExcelExporter
 import base64
 
-def main():
-    st.set_page_config(
-        page_title="Resume Parser",
-        page_icon="📄",
-        layout="wide"
-    )
-    
+def show_page():
     st.title("📄 Resume Parser & Analyzer")
     st.title("💰Road to Million Biller!!!")
 
-    
     # Initialize session state
     if 'processed_candidates' not in st.session_state:
         st.session_state.processed_candidates = []
@@ -29,7 +22,6 @@ def main():
     
     # Check credentials availability
     credentials_status = check_credentials()
-
     
     # Main content area
     col1, col2 = st.columns([2, 1])
@@ -60,7 +52,11 @@ def main():
                     process_resumes(uploaded_files)
     
     with col2:
-        st.image("linktal logo transparent copy.png", width = 350)
+        # Note: You'll need to add the logo file to your project
+        try:
+            st.image("linktal logo transparent copy.png", width=350)
+        except:
+            pass  # Logo file not found, skip
         st.header("Processing Status")
         
         if st.session_state.processing_in_progress:
@@ -70,12 +66,10 @@ def main():
             
             if st.session_state.processing_complete:
                 st.success("Processed successfully!")
-
-                if st.button("Download Excel Report", type = "secondary",use_container_width=True):
+                if st.button("Download Excel Report", type="secondary", use_container_width=True):
                     generate_and_download_excel()
-            else:
-                st.info("No candidates processed yet.")
-     
+        else:
+            st.info("No candidates processed yet.")
     
     # Display processed candidates
     if st.session_state.processed_candidates:
@@ -106,7 +100,6 @@ def check_credentials():
         # Check OpenRouter API key
         if "DEEPSEEK_API_KEY" in st.secrets:
             deepseek_status = True
-            
     except Exception as e:
         st.error(f"Error checking credentials: {str(e)}")
     
@@ -175,7 +168,6 @@ def process_resumes(uploaded_files):
                 st.session_state.processed_candidates.append(parsed_data)
                 successful_processes += 1
                 
-                
             except Exception as e:
                 st.error(f"Error processing {uploaded_file.name}: {str(e)}")
                 continue
@@ -198,7 +190,6 @@ def process_resumes(uploaded_files):
         # Show detailed error for debugging
         with st.expander("Error Details"):
             st.code(traceback.format_exc())
-
 
 def generate_and_download_excel():
     """Generate and auto-download Excel report"""
@@ -232,44 +223,3 @@ def generate_and_download_excel():
         st.error(f"Error generating Excel report: {str(e)}")
         with st.expander("Error Details"):
             st.code(traceback.format_exc())
-
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
