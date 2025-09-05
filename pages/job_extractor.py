@@ -108,13 +108,35 @@ def extract_jobs(url):
                 status_text.text(f"Extracting page {page_count}... ({len(all_jobs)} jobs found)")
                 progress_bar.progress(min((page_count / 10) * 100, 90) / 100)
                 
-                # Make request with headers to avoid blocking
+                # Make request with comprehensive headers to avoid blocking
                 headers = {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'DNT': '1',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                    'Sec-Fetch-Dest': 'document',
+                    'Sec-Fetch-Mode': 'navigate',
+                    'Sec-Fetch-Site': 'none',
+                    'Sec-Fetch-User': '?1',
+                    'Cache-Control': 'max-age=0'
                 }
                 
-                response = requests.get(current_url, headers=headers, timeout=30)
-                response.raise_for_status()
+                # Create a session to maintain cookies
+                session = requests.Session()
+                session.headers.update(headers)
+                
+                try:
+                    response = session.get(current_url, timeout=30)
+                    response.raise_for_status()
+                except requests.exceptions.HTTPError as e:
+                    if response.status_code == 403:
+                        st.warning(f"⚠️ Access denied (403) for page {page_count}. This website may be blocking automated requests. Try using a different search URL or check if the website has anti-bot protection.")
+                        break
+                    else:
+                        raise e
                 
                 soup = BeautifulSoup(response.content, 'html.parser')
                 
@@ -137,8 +159,7 @@ def extract_jobs(url):
                 current_url = next_url
                 page_count += 1
                 
-                # Add delay to be respectful to the website
-                time.sleep(2)
+                # No delay - direct extraction like the Chrome extension
                 
             except Exception as e:
                 st.warning(f"Error extracting page {page_count}: {str(e)}")
@@ -163,33 +184,24 @@ def extract_jobs(url):
         st.session_state.extraction_in_progress = False
 
 def extract_seek_jobs(soup):
-    """Extract job data from Seek page"""
+    """Extract job data from Seek page - using Chrome extension logic"""
     jobs = []
     
-    # Multiple selectors to catch different layouts
-    job_cards = soup.find_all(['div', 'article'], attrs={
-        'data-automation': lambda x: x and 'normalJob' in x
-    })
-    
-    if not job_cards:
-        # Fallback selectors
-        job_cards = soup.find_all(['div', 'article'], class_=lambda x: x and 'job' in x.lower())
+    # Use exact selectors from Chrome extension
+    job_cards = soup.select('[data-automation="normalJob"], [data-testid="job-card"], article[data-automation], .job-card, [data-cy="job-item"]')
     
     for card in job_cards:
         try:
-            # Extract job title
-            title_elem = card.find(['a', 'h3', 'h2'], attrs={'data-automation': lambda x: x and 'jobTitle' in x}) or \
-                        card.find(['a', 'h3', 'h2'], class_=lambda x: x and 'title' in x.lower())
+            # Extract job title - multiple selectors like the extension
+            title_elem = card.select_one('[data-automation="jobTitle"] a, [data-automation="job-title"] a, h3 a, h2 a, .job-title a, [data-testid="job-title"] a')
             job_title = title_elem.get_text(strip=True) if title_elem else 'N/A'
             
-            # Extract company
-            company_elem = card.find(['span', 'a', 'div'], attrs={'data-automation': lambda x: x and 'jobCompany' in x}) or \
-                          card.find(['span', 'a', 'div'], class_=lambda x: x and 'company' in x.lower())
+            # Extract company name
+            company_elem = card.select_one('[data-automation="jobCompany"] a, [data-automation="jobCompany"], [data-automation="job-company"], .company-name, [data-testid="job-company"]')
             company = company_elem.get_text(strip=True) if company_elem else 'N/A'
             
             # Extract location
-            location_elem = card.find(['span', 'a', 'div'], attrs={'data-automation': lambda x: x and 'jobLocation' in x}) or \
-                           card.find(['span', 'a', 'div'], class_=lambda x: x and 'location' in x.lower())
+            location_elem = card.select_one('[data-automation="jobLocation"] a, [data-automation="jobLocation"], [data-automation="job-location"], .job-location, [data-testid="job-location"]')
             location = location_elem.get_text(strip=True) if location_elem else 'N/A'
             
             if job_title != 'N/A' or company != 'N/A':
@@ -205,33 +217,24 @@ def extract_seek_jobs(soup):
     return jobs
 
 def extract_jobstreet_jobs(soup):
-    """Extract job data from Jobstreet page"""
+    """Extract job data from Jobstreet page - using Chrome extension logic"""
     jobs = []
     
-    # Multiple selectors for different layouts
-    job_cards = soup.find_all(['div', 'article'], attrs={
-        'data-automation': lambda x: x and 'job-list-item' in x
-    })
-    
-    if not job_cards:
-        # Fallback selectors
-        job_cards = soup.find_all(['div', 'article'], class_=lambda x: x and 'job' in x.lower())
+    # Use exact selectors from Chrome extension
+    job_cards = soup.select('[data-automation="job-list-item"], .job-item, .job-card, [data-testid="job-card"], .job, article[data-cy]')
     
     for card in job_cards:
         try:
-            # Extract job title
-            title_elem = card.find(['a', 'h2', 'h3'], class_=lambda x: x and 'title' in x.lower()) or \
-                        card.find(['a', 'h2', 'h3'])
+            # Extract job title - multiple selectors like the extension
+            title_elem = card.select_one('h2 a, h3 a, .job-title a, [data-automation="job-title"] a, [data-testid="job-title"] a, a[data-automation="jobTitle"]')
             job_title = title_elem.get_text(strip=True) if title_elem else 'N/A'
             
-            # Extract company
-            company_elem = card.find(['span', 'div'], class_=lambda x: x and 'company' in x.lower()) or \
-                          card.find(['span', 'div'], attrs={'data-automation': lambda x: x and 'company' in x})
+            # Extract company name
+            company_elem = card.select_one('[data-automation="job-company"], .company-name, .job-company, [data-testid="job-company"], .company')
             company = company_elem.get_text(strip=True) if company_elem else 'N/A'
             
             # Extract location
-            location_elem = card.find(['span', 'div'], class_=lambda x: x and 'location' in x.lower()) or \
-                           card.find(['span', 'div'], attrs={'data-automation': lambda x: x and 'location' in x})
+            location_elem = card.select_one('[data-automation="job-location"], .location, .job-location, [data-testid="job-location"], .job-location-text')
             location = location_elem.get_text(strip=True) if location_elem else 'N/A'
             
             if job_title != 'N/A' or company != 'N/A':
