@@ -21,10 +21,11 @@ def main():
     
     # Route to appropriate page
     if page == "📄 Resume Parser":
-        resume_parser.show_page()
+        resume_parser
     elif page == "💼 Job Extractor":
-        job_extractor.show_page()
+        job_extractor
 
 if __name__ == "__main__":
     main()
+
 
