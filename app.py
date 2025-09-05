@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Import the pages
-import resume_parser, job_extractor
+from pages import resume_parser, job_extractor
 
 def main():
     st.set_page_config(
@@ -27,5 +27,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
