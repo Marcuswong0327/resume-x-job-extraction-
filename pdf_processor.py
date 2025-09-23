@@ -67,4 +67,3 @@ class PDFProcessor:
             Extracted text as string
         """
         return self.extract_text_from_pdf(uploaded_file)
-
