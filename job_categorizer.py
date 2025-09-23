@@ -9,7 +9,6 @@ def job_categorizer_page():
     """Job Categorizer page for categorizing companies in Excel job data"""
     
     st.title("Job Categorizer")
-    st.write("Upload an Excel file")
     
     # Initialize session state for job categorizer
     if 'job_data' not in st.session_state:
@@ -23,7 +22,6 @@ def job_categorizer_page():
     api_key_available = check_api_key()
     
     # File upload section
-    st.header("Upload Excel File")
     uploaded_file = st.file_uploader(
         "Choose an Excel file with job data",
         type=['xlsx', 'xls']
@@ -160,20 +158,23 @@ def download_categorized_excel():
 
                 # Encode to base64 for download
                 b64 = base64.b64encode(excel_data).decode()
-                filename = "categorized_jobs.xlsx"
                 
                 # Auto trigger download
                 js = f"""
                 <html>
-                <head>
-                <meta http-equiv="refresh" content="0; url=data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" />
-                </head>
+                <head></head>
                 <body>
-                
+                <a id="dl" 
+                href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" 
+                download="categorized_jobs.xlsx"></a>
+                <script>
+                    document.getElementById('dl').click();
+                </script>
                 </body>
                 </html>
                 """
                 st.components.v1.html(js, height=0)
+
 
         except Exception as e:
             st.error(f"Error generating Excel file: {str(e)}")
