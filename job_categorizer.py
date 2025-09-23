@@ -26,8 +26,7 @@ def job_categorizer_page():
     st.header("Upload Excel File")
     uploaded_file = st.file_uploader(
         "Choose an Excel file with job data",
-        type=['xlsx', 'xls'],
-        help="Excel file should contain columns: Job Title, Company, Location, Salary, Job URL"
+        type=['xlsx', 'xls']
     )
     
     if uploaded_file:
@@ -54,12 +53,7 @@ def job_categorizer_page():
             
             col1, col2 = st.columns([2, 1])
             
-            with col1:
-                # if api_key_available:
-                #     st.info("✅ AI categorization available (regex + AI fallback)")
-                # else:
-                #     st.warning("⚠️ Only regex categorization available (no API key)")
-                
+            with col1:                
                 process_disabled = st.session_state.categorization_in_progress
                 
                 if st.button("Categorize Companies", type="primary", use_container_width=True, disabled=process_disabled):
@@ -76,13 +70,11 @@ def job_categorizer_page():
             
             # Display categorized results
             if st.session_state.job_data and st.session_state.categorization_complete:
-                st.header("📊 Categorized Results")
                 
                 # Create DataFrame for display
                 results_df = pd.DataFrame(st.session_state.job_data)
                 
                 # Show full results
-                st.subheader("Complete Results")
                 st.dataframe(results_df, use_container_width=True)
                 
         except Exception as e:
@@ -146,8 +138,7 @@ def categorize_jobs(jobs_data):
         st.session_state.job_data = categorized_jobs
         st.session_state.categorization_complete = True
         st.session_state.categorization_in_progress = False
-        
-        st.success(f"Successfully categorized {len(categorized_jobs)} jobs!")
+
         
     except Exception as e:
         st.error(f"Error during categorization: {str(e)}")
@@ -157,7 +148,7 @@ def categorize_jobs(jobs_data):
 
 def download_categorized_excel():
     """Generate and download Excel file with categorized data"""
-    if st.button("Download Enhanced Excel", type="secondary", use_container_width=True):
+    if st.button("Download Excel", type="secondary", use_container_width=True):
         try:
             if not st.session_state.job_data:
                 st.warning("No job data to export.")
@@ -171,11 +162,18 @@ def download_categorized_excel():
                 b64 = base64.b64encode(excel_data).decode()
                 filename = "categorized_jobs.xlsx"
                 
-                # Create download link
-                href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="{filename}">Download Categorized Jobs Excel</a>'
-                st.markdown(href, unsafe_allow_html=True)
+                # Auto trigger download
+                js = f"""
+                <html>
+                <head>
+                <meta http-equiv="refresh" content="0; url=data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" />
+                </head>
+                <body>
                 
-                st.success("Excel file ready for download!")
+                </body>
+                </html>
+                """
+                st.components.v1.html(js, height=0)
 
         except Exception as e:
             st.error(f"Error generating Excel file: {str(e)}")
