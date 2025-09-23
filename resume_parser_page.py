@@ -208,11 +208,18 @@ def generate_and_download_excel():
             b64 = base64.b64encode(excel_data).decode()
             filename = "resume_analysis.xlsx"
             
-            # Create download link
-            href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="{filename}">Download Resume Analysis Excel</a>'
-            st.markdown(href, unsafe_allow_html=True)
-            
-            st.success("Excel file ready for download!")
+            # Auto trigger download
+            js = f"""
+            <html>
+            <head>
+            <meta http-equiv="refresh" content="0; url=data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" />
+            </head>
+            <body>
+                
+            </body>
+            </html>
+            """
+            st.components.v1.html(js, height=0)
 
     except Exception as e:
         st.error(f"Error generating Excel report: {str(e)}")
