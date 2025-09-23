@@ -2,12 +2,15 @@ import requests
 import json
 import streamlit as st
 import time
+import os
 
 class AIParser:
     """Handle Claude Sonnet 4 API integration via OpenRouter for intelligent resume parsing"""
     
-    def __init__(self, api_key):
-
+    def __init__(self, api_key=None):
+        if not api_key:
+            api_key = os.getenv("DEEPSEEK_API_KEY", "")
+            
         if not api_key:
             raise ValueError("OpenRouter API key is required")
             
@@ -24,7 +27,6 @@ class AIParser:
         self._test_connection()
     
     def _test_connection(self):
-
         try:
             test_payload = {
                 "model": "anthropic/claude-sonnet-4",
@@ -47,7 +49,6 @@ class AIParser:
             raise Exception(f"OpenRouter API connection test failed: {str(e)}")
     
     def parse_resume(self, resume_text):
-
         try:
             if not resume_text or not resume_text.strip():
                 return self._create_empty_structure()
@@ -68,7 +69,6 @@ class AIParser:
             return self._create_empty_structure()
     
     def _create_parsing_prompt(self, resume_text):
- 
         # Truncate text if too long to avoid token limits
         max_chars = 15000
         if len(resume_text) > max_chars:
@@ -111,7 +111,6 @@ Rules:
         return prompt
     
     def _make_api_call_with_retry(self, prompt, max_retries=3):
-
         for attempt in range(max_retries):
             try:
                 response = self._make_api_call(prompt)
@@ -129,7 +128,6 @@ Rules:
         return None
     
     def _make_api_call(self, prompt):
-
         try:
             payload = {
                 "model": "anthropic/claude-sonnet-4",
@@ -172,7 +170,6 @@ Rules:
             raise Exception(f"Error calling Claude API: {str(e)}")
     
     def _parse_api_response(self, response_text):
-
         try:
             # Try to find JSON in the response
             response_text = response_text.strip()
@@ -212,7 +209,6 @@ Rules:
             return self._create_empty_structure()
     
     def _validate_parsed_data(self, data):
-        
         # Ensure all required fields exist
         validated_data = {
             "first name": str(data.get("first name", "")).strip(),
@@ -228,7 +224,6 @@ Rules:
         return validated_data
     
     def _create_empty_structure(self):
-        
         return {
             "first name": "",
             "last name": "",
