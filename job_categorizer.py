@@ -8,8 +8,8 @@ from excel_exporter import ExcelExporter
 def job_categorizer_page():
     """Job Categorizer page for categorizing companies in Excel job data"""
     
-    st.title("🏢 Job Categorizer")
-    st.write("Upload an Excel file with job data to categorize companies by business nature")
+    st.title("Job Categorizer")
+    st.write("Upload an Excel file")
     
     # Initialize session state for job categorizer
     if 'job_data' not in st.session_state:
@@ -23,7 +23,7 @@ def job_categorizer_page():
     api_key_available = check_api_key()
     
     # File upload section
-    st.header("📁 Upload Excel File")
+    st.header("Upload Excel File")
     uploaded_file = st.file_uploader(
         "Choose an Excel file with job data",
         type=['xlsx', 'xls'],
@@ -45,25 +45,20 @@ def job_categorizer_page():
                 return
             
             # Display file info
-            st.success(f"✅ File uploaded successfully: {len(df)} jobs found")
+            st.success(f"File uploaded successfully: {len(df)} jobs found")
             
-            # Show preview of data
-            with st.expander("📋 Data Preview", expanded=True):
-                st.dataframe(df.head(10), use_container_width=True)
             
             # Convert DataFrame to list of dictionaries
             jobs_data = df.to_dict('records')
             
-            # Categorization section
-            st.header("🔍 Company Categorization")
             
             col1, col2 = st.columns([2, 1])
             
             with col1:
-                if api_key_available:
-                    st.info("✅ AI categorization available (regex + AI fallback)")
-                else:
-                    st.warning("⚠️ Only regex categorization available (no API key)")
+                # if api_key_available:
+                #     st.info("✅ AI categorization available (regex + AI fallback)")
+                # else:
+                #     st.warning("⚠️ Only regex categorization available (no API key)")
                 
                 process_disabled = st.session_state.categorization_in_progress
                 
@@ -76,8 +71,8 @@ def job_categorizer_page():
                 elif st.session_state.categorization_complete and st.session_state.job_data:
                     st.metric("Categorized Jobs", len(st.session_state.job_data))
                     
-                    if st.button("Download Enhanced Excel", type="secondary", use_container_width=True):
-                        download_categorized_excel()
+                    
+                    download_categorized_excel()
             
             # Display categorized results
             if st.session_state.job_data and st.session_state.categorization_complete:
@@ -85,23 +80,6 @@ def job_categorizer_page():
                 
                 # Create DataFrame for display
                 results_df = pd.DataFrame(st.session_state.job_data)
-                
-                # Show statistics
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    unique_categories = results_df['Business Nature'].nunique()
-                    st.metric("Unique Categories", unique_categories)
-                with col2:
-                    unknown_count = len(results_df[results_df['Business Nature'] == 'Unknown'])
-                    st.metric("Unknown Categories", unknown_count)
-                with col3:
-                    categorized_count = len(results_df[results_df['Business Nature'] != 'Unknown'])
-                    st.metric("Successfully Categorized", categorized_count)
-                
-                # Show category distribution
-                with st.expander("📈 Category Distribution", expanded=True):
-                    category_counts = results_df['Business Nature'].value_counts()
-                    st.bar_chart(category_counts)
                 
                 # Show full results
                 st.subheader("Complete Results")
@@ -129,7 +107,7 @@ def categorize_jobs(jobs_data):
     
     try:
         # Initialize categorizer
-        with st.spinner("Initializing categorizer..."):
+        with st.spinner("Initializing..."):
             api_key = st.secrets.get("DEEPSEEK_API_KEY", "") if "DEEPSEEK_API_KEY" in st.secrets else ""
             categorizer = CompanyCategorizer(api_key)
         
@@ -179,26 +157,27 @@ def categorize_jobs(jobs_data):
 
 def download_categorized_excel():
     """Generate and download Excel file with categorized data"""
-    try:
-        if not st.session_state.job_data:
-            st.warning("No job data to export.")
-            return
+    if st.button("Download Enhanced Excel", type="secondary", use_container_width=True):
+        try:
+            if not st.session_state.job_data:
+                st.warning("No job data to export.")
+                return
 
-        with st.spinner("Generating Excel file..."):
-            exporter = ExcelExporter()
-            excel_data = exporter.export_jobs(st.session_state.job_data)
+            with st.spinner("Generating Excel file..."):
+                exporter = ExcelExporter()
+                excel_data = exporter.export_jobs(st.session_state.job_data)
 
-            # Encode to base64 for download
-            b64 = base64.b64encode(excel_data).decode()
-            filename = "categorized_jobs.xlsx"
-            
-            # Create download link
-            href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="{filename}">Download Categorized Jobs Excel</a>'
-            st.markdown(href, unsafe_allow_html=True)
-            
-            st.success("Excel file ready for download!")
+                # Encode to base64 for download
+                b64 = base64.b64encode(excel_data).decode()
+                filename = "categorized_jobs.xlsx"
+                
+                # Create download link
+                href = f'<a href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" download="{filename}">Download Categorized Jobs Excel</a>'
+                st.markdown(href, unsafe_allow_html=True)
+                
+                st.success("Excel file ready for download!")
 
-    except Exception as e:
-        st.error(f"Error generating Excel file: {str(e)}")
-        with st.expander("Error Details"):
-            st.code(traceback.format_exc())
+        except Exception as e:
+            st.error(f"Error generating Excel file: {str(e)}")
+            with st.expander("Error Details"):
+                st.code(traceback.format_exc())
