@@ -36,7 +36,7 @@ def resume_parser_page():
         )
         
         if uploaded_files:
-            st.success(f"✅ {len(uploaded_files)} file(s) uploaded successfully")
+            st.success(f"{len(uploaded_files)} files uploaded successfully")
             
             # Display uploaded files
             with st.expander("📋 Uploaded Files", expanded=True):
@@ -206,16 +206,17 @@ def generate_and_download_excel():
 
             # Encode to base64 for direct download
             b64 = base64.b64encode(excel_data).decode()
-            filename = "resume_analysis.xlsx"
             
-            # Auto trigger download
             js = f"""
             <html>
-            <head>
-            <meta http-equiv="refresh" content="0; url=data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" />
-            </head>
+            <head></head>
             <body>
-                
+            <a id="dl" 
+            href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{b64}" 
+            download="resume_analysis.xlsx"></a>
+            <script>
+                document.getElementById('dl').click();
+            </script>
             </body>
             </html>
             """
