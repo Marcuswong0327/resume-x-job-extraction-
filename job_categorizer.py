@@ -8,7 +8,7 @@ from excel_exporter import ExcelExporter
 def job_categorizer_page():
     """Job Categorizer page for categorizing companies in Excel job data"""
     
-    st.title("Job Categorizer")
+    st.title("Company Categorizer")
     
     # Initialize session state for job categorizer
     if 'job_data' not in st.session_state:
