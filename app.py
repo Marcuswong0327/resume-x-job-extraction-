@@ -10,16 +10,16 @@ def main():
     )
     
     # Sidebar navigation
-    st.sidebar.title("Navigation")
+    st.sidebar.title("Menu")
     page = st.sidebar.selectbox(
         "Choose a page:",
-        ["Resume Parser", "Job Categorizer"]
+        ["Resume Parser", "Company Categorizer"]
     )
     
     # Route to appropriate page
     if page == "Resume Parser":
         resume_parser_page()
-    elif page == "Job Categorizer":
+    elif page == "Company Categorizer":
         job_categorizer_page()
 
 if __name__ == "__main__":
