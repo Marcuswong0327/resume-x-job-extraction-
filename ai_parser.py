@@ -19,7 +19,7 @@ class AIParser:
         self.headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://replit.com", 
+            "HTTP-Referer": "https://www.linkedin.com/in/marcus-wong-313b281b8/", 
             "X-Title": "Resume Parser"
         }
         
